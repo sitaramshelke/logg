@@ -35,7 +35,7 @@ It takes a processed event and stores in a store. A store can be of a predefined
 - [x] A basic file writer which appends string into a file.
 
 ### 0.0.2     
-- [ ] Design a basic config format for above three stages
+- [x] Design a basic config format for above three stages
 - [ ] write a parser to parse that config file as an argument
 - [ ] Refactor the code so that this configuration can be used
 
