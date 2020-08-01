@@ -30,9 +30,9 @@ It takes a processed event and stores in a store. A store can be of a predefined
 
 ## Roadmap      
 ### 0.0.1
-- [ ] A basic HTTP listener for JSON events
-- [ ] A basic processor which converts JSON to a JSON string
-- [ ] A basic file writer which appends string into a file.
+- [x] A basic HTTP listener for JSON events
+- [x] A basic processor which converts JSON to a JSON string
+- [x] A basic file writer which appends string into a file.
 
 ### 0.0.2     
 - [ ] Design a basic config format for above three stages
