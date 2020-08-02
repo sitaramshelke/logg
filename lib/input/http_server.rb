@@ -7,11 +7,11 @@ module Input
   REQUIERD_CONTENT_TYPE = 'application/json'.freeze
 
   class HTTPServer
-    def initialize(host, port, event_queue)
+    def initialize(event_queue, options)
       @event_queue = event_queue
       @server = nil
-      @host = host
-      @port = port
+      @host = options['host']
+      @port = options['port']
     end
 
     def register

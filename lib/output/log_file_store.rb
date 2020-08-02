@@ -5,13 +5,13 @@ module Output
     end
 
     def configure
-      file_path = @options[:file_path]
-      return false if file_path.nil?
-      return false if File.directory? file_path
-      return false if File.exist?(file_path) && !File.writable?(file_path)
+      filename = @options['filename']
+      return false if filename.nil?
+      return false if File.directory? filename
+      return false if File.exist?(filename) && !File.writable?(filename)
 
-      unless File.exist?(file_path)
-        f = File.new(@options[:file_path], 'w')
+      unless File.exist?(filename)
+        f = File.new(@options['filename'], 'w')
         f.close
       end
 
@@ -19,9 +19,17 @@ module Output
     end
 
     def write(data)
-      File.open(@options[:file_path], 'a') do |f|
+      File.open(@options['filename'], 'a') do |f|
         f.write(data)
       end
+    end
+
+    def start
+      # nothing as of now
+    end
+
+    def stop
+      # nothing as of now
     end
   end
 end

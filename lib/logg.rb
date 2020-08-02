@@ -1,43 +1,26 @@
-require 'input/http_server'
-require 'process/json_processor'
-require 'output/log_file_store'
+require 'engine/engine'
 
 class Logg
   def initialize
     @stopped = false
+    @engine = nil
   end
-
 
   def start
-    http_event_queue = []
-    http_server = Input::HTTPServer.new('0.0.0.0', 8080, http_event_queue)
-    log_store = Output::LogFileStore.new(file_path: 'test.log')
-    json_processor = Process::JsonProcessor.new(http_event_queue, log_store)
-
-    begin
-      unless log_store.configure
-        puts 'Could not access log file!!'
-        exit(0)
-      end
-
-      http_server.start
-      json_processor.start
-      puts "started.."
-      sleep 1 until @stopped
-    rescue SystemExit, Interrupt
-      puts 'Got exception..'
-      @stopped = true
-    end
+    @engine = Engine::Core.new('./config.yml')
+    @engine.setup
+    @engine.start
+    puts 'Started..'
+    sleep 1 until @stopped
+  rescue SystemExit, Interrupt
+    puts 'Got exception..'
+    stop
   end
 
-  private
-
-  def trap_signals
-    trap('INT') do
-      @stopped = true
-      puts 'Exiting..'
-      exit(0)
-    end
+  def stop
+    @stopped = true
+    @engine.stop
+    puts 'Exiting..'
+    exit(0)
   end
-
 end

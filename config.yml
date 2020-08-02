@@ -1,16 +1,13 @@
 Outputs:
   app-1-logs:
     type: log-file
-    name: app1.log
-    flush_interval: 5
-  app-2-logs:
-    type: log-file
-    name: app2.log
+    filename: test.log
     flush_interval: 5
 
 Processes:
     app-json-logs:
       type: json
+      output: app-1-logs
       pre-mutations:
         - name: mask-ip
           value: |+
@@ -29,12 +26,5 @@ Inputs:
   app1_logs:
     type: http-json
     process: app-json-logs
-    output: app-1-logs
     host: '0.0.0.0'
     port: 8080
-  app2_logs:
-    type: http-json
-    process: app-json-logs
-    output: app-2-logs
-    host: '0.0.0.0'
-    port: 8081

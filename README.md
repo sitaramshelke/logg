@@ -36,7 +36,7 @@ It takes a processed event and stores in a store. A store can be of a predefined
 
 ### 0.0.2     
 - [x] Design a basic config format for above three stages
-- [ ] write a parser to parse that config file as an argument
+- [x] write a parser to parse that config file as an argument
 - [ ] Refactor the code so that this configuration can be used
 
 ### 0.0.3        

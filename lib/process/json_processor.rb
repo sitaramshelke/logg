@@ -1,7 +1,9 @@
 module Process
   class JsonProcessor
-    def initialize(event_queue, store_instance)
-      @event_queue = event_queue
+    attr_reader :event_queue
+
+    def initialize(store_instance, _options)
+      @event_queue = []
       @store_instance = store_instance
       @current_thread = nil
     end
@@ -9,6 +11,10 @@ module Process
     def start
       @current_thread = Thread.new { process }
       # @current_thread.join
+    end
+
+    def stop
+      # nothing as of now
     end
 
     def process
