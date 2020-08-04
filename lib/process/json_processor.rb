@@ -3,7 +3,7 @@ module Process
     attr_reader :event_queue
 
     def initialize(store_instance, _options)
-      @event_queue = []
+      @event_queue = Queue.new  # Thread safe queue
       @store_instance = store_instance
       @current_thread = nil
     end
@@ -19,10 +19,10 @@ module Process
 
     def process
       loop do
-        @event_queue.each do |event|
+        until @event_queue.length.zero?
+          event = @event_queue.pop
           output = process_event(event)
           @store_instance.write("#{output}\n")
-          @event_queue.shift
         end
       end
     end

@@ -33,7 +33,7 @@ describe 'HTTP server with JSON processor and LogFileStore' do
       lines.split("\n").each { |l| suffixes -= [l[-1].to_i] }
 
       expect(lines.count("\n")).to equal(3)
-      expect(suffixes).to equal(0)
+      expect(suffixes.length).to equal(0)
     end
   end
 end
