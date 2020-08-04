@@ -2,46 +2,52 @@ require 'engine/engine'
 require 'tempfile'
 require 'yaml'
 require 'net/http'
+require 'byebug'
 
 describe 'HTTP server with JSON processor and LogFileStore' do
   it 'single event is injested successfully and returns 200' do
-    perform_with_engine do
-      status = post_http_request('127.0.0.1', '8080', headers, sample_json_log)
+    port = rand_port
+    perform_with_engine(port) do
+      status = post_http_request('127.0.0.1', port, headers, sample_json_log)
       expect(status).to equal(200)
     end
   end
 
   it 'single event is ingested and written to log file' do
-    perform_with_engine do |outfile|
-      post_http_request('127.0.0.1', '8080', headers, sample_json_log)
+    port = rand_port
+    perform_with_engine(port) do |outfile|
+      post_http_request('127.0.0.1', port, headers, sample_json_log)
       lines = outfile.read.count("\n")
-      expect(lines).to equal(1)
+      expect(lines).to eq(1)
     end
   end
 
   it 'multiple events are ingested successfully' do
-    perform_with_engine do |outfile|
+    port = rand_port
+    perform_with_engine(port) do |outfile|
       threads = []
+      outputs = []
       3.times do |n|
-        threads << Thread.new { post_http_request('127.0.0.1', '8080', headers, sample_json_log(n)) }
+        event = sample_json_log(n)
+        outputs << event.to_s
+        threads << Thread.new { post_http_request('127.0.0.1', port, headers, event)}
       end
       threads.each(&:join)
       sleep(3) # A hack to wait for the changes to be written in file
       lines = outfile.read
-      puts lines
-      suffixes = [0, 1, 2]
-      lines.split("\n").each { |l| suffixes -= [l[-1].to_i] }
+      input = lines.split("\n")
+      diff = input - outputs
 
-      expect(lines.count("\n")).to equal(3)
-      expect(suffixes.length).to equal(0)
+      expect(input.length).to eq(outputs.length)
+      expect(diff.length).to eq(0)
     end
   end
 end
 
-def perform_with_engine
-  outfile = Tempfile.new(['app', '.log'])
+def perform_with_engine(port)
+  outfile = Tempfile.new(["app-#{rand(1..9)}", '.log'])
   conf_file = Tempfile.new(['http_json_config', '.yml'])
-  conf_file.write(conf_str(outfile.path))
+  conf_file.write(conf_str(outfile.path, port))
   conf_file.close
 
   engine = Engine::Core.new(conf_file.path)
@@ -56,7 +62,7 @@ def perform_with_engine
   engine.stop
 end
 
-def conf_str(logfile_path)
+def conf_str(logfile_path, port)
   <<-YML
   Outputs:
     app-1-logs:
@@ -71,7 +77,7 @@ def conf_str(logfile_path)
           - name: mask-ip
             value: |+
               ->(event) {
-                event[:ip] = '*.*.*.*'
+                event['ip'] = '*.*.*.*'
                 return event
               }
         post-mutations:
@@ -85,9 +91,13 @@ def conf_str(logfile_path)
       type: http-json
       process: app-json-logs
       host: '0.0.0.0'
-      port: 8080
+      port: #{port}
 
   YML
+end
+
+def rand_port
+  rand(8080..8090)
 end
 
 def headers
@@ -96,8 +106,9 @@ end
 
 def sample_json_log(num = 1)
   {
-    'timestamp': Time.now.to_s,
-    'message': "INFO: This is a sample log #{num}"
+    'timestamp' => Time.now.to_s,
+    'ip' => '1.1.1.1',
+    'message' =>  "INFO: This is a sample log #{num}"
   }
 end
 
