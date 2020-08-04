@@ -1,11 +1,15 @@
 require 'net/http/server'
 require 'json'
 
+# Module Input will act as a namespace for all the inputs
 module Input
   CONTENT_LENGTH = 'Content-Length'.freeze
   CONTENT_TYPE = 'Content-Type'.freeze
   REQUIERD_CONTENT_TYPE = 'application/json'.freeze
 
+  # HTTPServer is concrete implmentation of BaseInput. It will work with
+  # events over HTTP protocol and runs and embedded HTTP server. Server
+  # should be able to consume events in different media formats JSON, Text.
   class HTTPServer
     def initialize(event_queue, options)
       @event_queue = event_queue
@@ -16,6 +20,11 @@ module Input
 
     def register
       puts 'Registration successful'
+      true
+    end
+
+    def running?
+      @server != nil
     end
 
     def start

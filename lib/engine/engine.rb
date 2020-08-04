@@ -1,10 +1,16 @@
 require 'yaml'
 
+# Engine module represents the processes of building the core and
+# and the runtime.
 module Engine
+  # Require all the input, process and outputs
   Dir[File.join(__dir__, '..', 'input', '*.rb')].each { |file| require file }
   Dir[File.join(__dir__, '..', 'process', '*.rb')].each { |file| require file }
   Dir[File.join(__dir__, '..', 'output', '*.rb')].each { |file| require file }
 
+  # ConfigParser is repsonsible for parsing the config file, it should detect
+  # syntactically incorrect files so that we can early detect the issues.
+  # It should also validate absence of necessary blocks.
   module ConfigParser
     def parse
       @config = YAML.load_file(@filepath)
@@ -40,6 +46,9 @@ module Engine
     end
   end
 
+  # ConfigBuilder is responsible for figuring out semantic issues
+  # It should also be able to build the complete pipeline from the config
+  # and validate them to detect failures before starting the engine.
   module ConfigBuilder
     def build
       build_output
@@ -97,6 +106,8 @@ module Engine
     end
   end
 
+  # Core class will start all the blocks and take care of reliable start
+  # and stopping of these bloks. It will also do the necessary cleaning.
   class Core
     include Engine::ConfigParser
     include Engine::ConfigBuilder

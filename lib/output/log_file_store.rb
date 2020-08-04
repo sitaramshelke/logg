@@ -1,4 +1,8 @@
+# Output module will act as a namespace for all outputs
 module Output
+  # LogFileStore is a concrete implmentation of BaseStore.
+  # It implments the logic of writing into log files.
+  # It should handle the buffering for efficient writes and logrotation.
   class LogFileStore
     def initialize(options)
       @options = options || {}

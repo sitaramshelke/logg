@@ -1,5 +1,8 @@
 require 'engine/engine'
 
+# Logg will read the command line arguments, parse
+# them and hold the instance of engine and take care of
+# exceptions and initiate a clean shutdown of engine.
 class Logg
   def initialize
     @stopped = false

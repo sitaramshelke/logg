@@ -1,4 +1,9 @@
+# Process module acts as a namespace for all processes
 module Process
+  # JsonProcessor is a concrete impmentation of BaseProcess.
+  # It reads a message from the event queue one at a time and
+  # performing massaging, filtering and mutations before it is written
+  # to a store.
   class JsonProcessor
     attr_reader :event_queue
 
