@@ -21,6 +21,24 @@ module Process
 
     def stop
       # nothing as of now
+      @current_thread.terminate
+      @current_thread.join
+    end
+
+    def running?
+      @current_thread.status == 'run'
+    end
+
+    def stopped?
+      return true if @current_thread.nil?
+
+      @current_thread.status != 'run'
+    end
+
+    def valid?
+      return false if @event_queue.nil? || @options.nil? || @store_instance.nil?
+
+      true
     end
 
     def process
